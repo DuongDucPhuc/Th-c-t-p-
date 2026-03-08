@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bus Tracker Map</title>
+
+    <!-- Mapbox GL JS -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.css' rel='stylesheet' />
+
+    <!-- Mapbox Search JS -->
+    <script id="search-js" defer src="https://api.mapbox.com/search-js/v1.3.0/web.js"></script>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+        
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- MQTT Protocol -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+
+<body>
+    <!-- Thanh tìm kiếm địa điểm và chỉ đường -->
+    <div class="search-container">
+        <div class="search-inputs">
+            <mapbox-search-box id="start-box" access-token="pk.eyJ1IjoidGFudG5uaDAwIiwiYSI6ImNseG9kc3V5dDBlZWoybG9haDRtOTB6MTkifQ.1MEYSJCV61ehfRxKmJ_ztA" placeholder="Điểm bắt đầu"></mapbox-search-box>
+            <mapbox-search-box id="end-box" access-token="pk.eyJ1IjoidGFudG5uaDAwIiwiYSI6ImNseG9kc3V5dDBlZWoybG9haDRtOTB6MTkifQ.1MEYSJCV61ehfRxKmJ_ztA" placeholder="Điểm đến"></mapbox-search-box>
+            <button id="find-route-btn" class="find-route-btn">Tìm Đường</button>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <!-- Panel trái (chọn trạm xe buýt) -->
+        <div class="left-panel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Chọn trạm xe buýt<i class="fas fa-arrow-left" style="float: right;" onclick="closeLeftPanel()"></i></h5>
+                    <!-- Danh sách trạm -->
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headlingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Danh sách trạm
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush" id="lstBS"></ul>
+                                    <h6 class="mt-3">Trạm gần tuyến đường:</h6>
+                                    <div id="nearby-stations-scroll-container">
+                                        <ul class="list-group list-group-flush" id="route-stations-list">
+                                            <p>Tìm đường để xem các trạm gần tuyến đường.</p>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Button mở panel trái -->
+        <div class="btn-open-leftpanel" onclick="openLeftPanel()"><i class="fas fa-arrow-right"></i></div>
+
+        <!-- Map -->
+        <div id='map'></div>
+
+        <!-- Panel phải (thông tin xe buýt) -->
+        <div class="right-panel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin xe buýt<i class="fa-solid fa-arrow-up" style="float: right;" onclick="closeRightPanel()"></i></h5>
+                    <div id="bus-info" class="info-box">
+                        <p>Chưa nhận dữ liệu từ xe buýt…</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Button mở panel phải -->
+        <div class="btn-open-rightpanel" onclick="openRightPanel()"><i class="fa-solid fa-arrow-down"></i></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
+
+    <script src="index.js"></script>
+</body>
+</html>
